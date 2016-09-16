@@ -1,20 +1,16 @@
 #lang scheme
 
-(define (sqrt x) (sqrt-iter 1.0 x))
-
-(define (sqrt-iter guess x)
-  (if (good-enough? guess (improve guess x))
+(define (sqrt x)
+  (define (sqrt-iter guess)
+    (define better-guess (average guess (/ x guess)))
+    (define good-enough?
+      (if (< (/ (abs (- better-guess guess)) guess) 0.0001)
+        #t
+        #f))
+    (if good-enough?
       guess
-      (sqrt-iter (improve guess x)
-                 x)))
-
-(define (good-enough? a b)
-  (if (< (/ (abs (- b a)) a) 0.0001)
-      #t
-      #f))
-
-(define (improve guess x)
-  (average guess (/ x guess)))
+      (sqrt-iter better-guess)))
+  (sqrt-iter 1.0))
 
 (define (average x y)
   (/ (+ x y) 2))

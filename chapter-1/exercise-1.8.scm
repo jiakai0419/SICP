@@ -1,18 +1,13 @@
 #lang scheme
 
-(define (cbrt x) (cbrt-iter 1.0 x))
-
-(define (cbrt-iter guess x)
-  (if (good-enough? guess (improve guess x))
+(define (cbrt x)
+  (define (cbrt-iter guess)
+    (define better-guess (/ (+ (/ x (* guess guess)) (* 2 guess)) 3))
+    (define good-enough?
+      (if (< (/ (abs (- better-guess guess)) guess) 0.0001)
+        #t
+        #f))
+    (if good-enough?
       guess
-      (cbrt-iter (improve guess x)
-                 x)))
-
-(define (good-enough? a b)
-  (if (< (/ (abs (- b a)) a) 0.0001)
-      #t
-      #f))
-
-(define (improve guess x)
-  (/ (+ (/ x (* guess guess)) (* 2 guess)) 3))
-
+      (cbrt-iter better-guess)))
+  (cbrt-iter 1.0))
