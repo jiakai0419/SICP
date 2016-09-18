@@ -1,6 +1,6 @@
 #lang scheme
 
-;recursion
+; recursion
 (define (fr n)
   (cond ((< n 3) n)
         (else (+ (fr (- n 1))
@@ -8,7 +8,7 @@
                  (* 3 (fr (- n 3)))))))
 
 
-;iteration
+; iteration
 (define (fi n)
   (define (fi-iter a b c t)
     (if (= t 0)
