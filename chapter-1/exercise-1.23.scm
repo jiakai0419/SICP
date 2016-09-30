@@ -1,5 +1,7 @@
 #lang scheme
 
+(provide prime?)
+
 (define (smallest-divisor n)
   (define (find-divisor x)
     (define next
