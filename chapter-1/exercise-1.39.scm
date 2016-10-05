@@ -14,17 +14,17 @@
              (lambda (i) (- (* 2 i) 1.0))
              k))
 
-(define K 100000)
 
 ;;; test
-(define (deg2rad x) (* (/ 3.1415926 180) x))
+; (define K 100000)
+; (define (deg2rad x) (* (/ 3.1415926 180) x))
 
-(tan-cf (deg2rad 30) K)
-(tan (deg2rad 30))
+; (tan-cf (deg2rad 30) K)
+; (tan (deg2rad 30))
 
-(tan-cf (deg2rad 45) K)
-(tan (deg2rad 45))
+; (tan-cf (deg2rad 45) K)
+; (tan (deg2rad 45))
 
-(tan-cf (deg2rad 60) K)
-(tan (deg2rad 60))
+; (tan-cf (deg2rad 60) K)
+; (tan (deg2rad 60))
 
