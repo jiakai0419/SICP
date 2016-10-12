@@ -10,11 +10,11 @@
   (lambda (f) (lambda (x) ((a f) ((b f) x)))))
 
 ;;; test
-(define (f x) (display "*"))
-((one f) "a")
-(newline)
-((two f) "a")
-(newline)
-(((add one two) f) "a")
-(newline)
+; (define (f x) (display "*"))
+; ((one f) "a")
+; (newline)
+; ((two f) "a")
+; (newline)
+; (((add one two) f) "a")
+; (newline)
 
