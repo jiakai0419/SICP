@@ -2,6 +2,8 @@
 
 (require "exercise-2.11.scm")
 
+(provide make-center-percent)
+
 (define (make-center-percent c p)
   (make-interval (- c (* c p 0.01))
                  (+ c (* c p 0.01))))
@@ -13,8 +15,8 @@
   (/ (- (upper-bound i) (lower-bound i)) 2 0.01 (center i)))
 
 ;;; test
-(define i (make-center-percent 50 2))
-(display i)
-(center i)
-(percent i)
+; (define i (make-center-percent 50 2))
+; (display i)
+; (center i)
+; (percent i)
 
