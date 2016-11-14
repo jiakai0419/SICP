@@ -12,14 +12,14 @@
                                   y))
               null
               sequence))
-; test
+;;; test
 ; (map sqr (list 1 2 3 4 5))
 
 (define (append seq1 seq2)
   (accumulate cons
               seq2
               seq1))
-; test
+;;; test
 ; (append (list 1 3 5 7) (list 2 4 6 8))
 
 (define (length sequence)
@@ -27,6 +27,6 @@
                 (+ 1 y))
               0
               sequence))
-; test
+;;; test
 ; (length (list 0 1 1 2 3 5 8 13))
 
