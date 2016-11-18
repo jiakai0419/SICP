@@ -2,6 +2,8 @@
 
 (require "../chapter-1/exercise-1.23.scm")
 
+(provide flatmap enumerate-interval)
+
 (define (accumulate op initial sequence)
   (if (null? sequence)
     initial
