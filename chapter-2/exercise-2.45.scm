@@ -16,6 +16,6 @@
 (define up-split (split below beside))
 
 ;;; test
-(paint (right-split einstein 2))
-(paint (up-split einstein 2))
+; (paint (right-split einstein 2))
+; (paint (up-split einstein 2))
 
