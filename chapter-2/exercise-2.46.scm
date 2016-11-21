@@ -1,6 +1,8 @@
 #lang scheme
 
-(provide make-vect)
+(provide make-vect
+         add-vect
+         scale-vect)
 
 (define (make-vect x y)
   (cons x y))
