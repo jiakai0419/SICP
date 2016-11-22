@@ -2,6 +2,7 @@
 
 (provide make-vect
          add-vect
+         sub-vect
          scale-vect)
 
 (define (make-vect x y)
