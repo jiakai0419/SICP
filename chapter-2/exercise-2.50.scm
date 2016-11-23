@@ -4,6 +4,8 @@
                     make-vect))
 (require "exercise-2.46.scm")
 
+(provide transform-painter)
+
 (define (transform-painter painter origin corner1 corner2)
   (lambda (frame)
     (let ((m (frame-coord-map frame)))
