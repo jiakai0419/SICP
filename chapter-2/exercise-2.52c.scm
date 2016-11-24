@@ -33,5 +33,5 @@
       (below half (flip-vert half)))))
 
 ;;; test
-(paint (square-limit einstein 3))
+; (paint (square-limit einstein 3))
 
