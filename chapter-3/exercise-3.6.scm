@@ -19,15 +19,15 @@
               (error "Unknow op --RAND" op))))))
 
 ;;; test
-(rand 'generate)
-(rand 'generate)
-(rand 'generate)
+; (rand 'generate)
+; (rand 'generate)
+; (rand 'generate)
 
-(rand 'reset 1024)
-(rand 'generate)
-(rand 'generate)
+; (rand 'reset 1024)
+; (rand 'generate)
+; (rand 'generate)
 
-(rand 'reset 1024)
-(rand 'generate)
-(rand 'generate)
+; (rand 'reset 1024)
+; (rand 'generate)
+; (rand 'generate)
 
