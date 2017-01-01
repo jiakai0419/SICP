@@ -5,19 +5,28 @@
 
 ;;; queue
 (define (make-queue)
-  (cons '() '()))
+  (let ((front-ptr '())
+        (rear-ptr '()))
+    (define (dispatch op . args)
+      (cond ((eq? op 'front-ptr) front-ptr)
+            ((eq? op 'rear-ptr) rear-ptr)
+            ((eq? op 'set-front-ptr!) (set! front-ptr (car args)))
+            ((eq? op 'set-rear-ptr!) (set! rear-ptr (car args)))
+            (else
+              (error "Unknow OP MAKE-QUEUE" op))))
+    dispatch))
 
 (define (front-ptr queue)
-  (car queue))
+  (queue 'front-ptr))
 
 (define (rear-ptr queue)
-  (cdr queue))
+  (queue 'rear-ptr))
 
 (define (set-front-ptr! queue item)
-  (set-car! queue item))
+  (queue 'set-front-ptr! item))
 
 (define (set-rear-ptr! queue item)
-  (set-cdr! queue item))
+  (queue 'set-rear-ptr! item))
 
 ;;; queue opt
 (define (empty-queue? queue)
