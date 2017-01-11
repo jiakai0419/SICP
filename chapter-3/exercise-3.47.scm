@@ -25,7 +25,6 @@
     dispatch))
 
 ;; b)
-
 (define (make-semaphore n)
   (let ((cell (list #f))
         (c 0))
