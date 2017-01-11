@@ -1,0 +1,51 @@
+#lang r5rs
+
+;;; pseudo code
+
+;; a)
+(define (make-semaphore n)
+  (let ((mutex (make-mutex))
+        (c 0))
+    (define (acquire)
+      (mutex 'acquire)
+      (if (< c n)
+        (begin (set! c (+ c 1))
+               (mutex 'release))
+        (begin (mutex 'release)
+               (acquire))))
+    (define (release)
+      (mutex 'acquire)
+      (set! c (- c 1))
+      (mutex 'release))
+    (define (dispatch m)
+      (cond ((eq? m 'acquire) (acquire))
+            ((eq? m 'release) (release))
+            (else
+              (error "unkown m --SEMAPHORE" m))))
+    dispatch))
+
+;; b)
+
+(define (make-semaphore n)
+  (let ((cell (list #f))
+        (c 0))
+    (define (acquire)
+      (if (test-and-set! cell)
+        (acquire)
+        (if (< c n)
+          (begin (set! c (+ c 1))
+                 (clear! cell))
+          (begin (clear! cell)
+                 (acquire)))))
+    (define (release)
+      (if (test-and-set! cell)
+        (release)
+        (begin (set! c (- c 1))
+               (clear! cell))))
+    (define (dispatch m)
+      (cond ((eq? m 'acquire) (acquire))
+            ((eq? m 'release) (release))
+            (else
+              (error "unkown m --SEMAPHORE" m))))
+    dispatch))
+
