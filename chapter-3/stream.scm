@@ -6,7 +6,9 @@
  stream-cdr
  stream-ref
  stream-map
- print-stream)
+ print-stream
+ add-streams
+ partial-sums)
 
 (define the-empty-stream '())
 
@@ -31,6 +33,9 @@
                  (apply stream-map
                         (cons proc (map stream-cdr argstreams))))))
 
+(define (add-streams s1 s2)
+  (stream-map + s1 s2))
+
 (define (print-stream s n)
   (if (or (stream-null? s)
           (= n 0))
@@ -38,4 +43,9 @@
     (begin (display (stream-car s))
            (display " ")
            (print-stream (stream-cdr s) (- n 1)))))
+
+(define (partial-sums s)
+  (add-streams s
+               (cons-stream 0
+                            (partial-sums s))))
 
