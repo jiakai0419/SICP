@@ -1,5 +1,7 @@
 #lang planet neil/sicp
 
+(#%provide weighted-pairs)
+
 (#%require "stream.scm")
 
 (define (merge-weighted s1 s2 weight)
