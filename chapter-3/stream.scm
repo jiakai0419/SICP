@@ -9,6 +9,7 @@
  stream-filter
  print-stream
  add-streams
+ scale-stream
  partial-sums
  interleave
  integers)
@@ -45,6 +46,10 @@
 
 (define (add-streams s1 s2)
   (stream-map + s1 s2))
+
+(define (scale-stream s m)
+  (stream-map (lambda (x) (* m x))
+              s))
 
 (define (print-stream s n)
   (if (or (stream-null? s)
