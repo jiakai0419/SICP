@@ -24,13 +24,13 @@
   (generate-rand-stream input-stream init-seed))
 
 ;;; test
-(define istream
-  (cons-stream 1024
-               (cons-stream 'g
-                            (cons-stream 'g
-                                         (cons-stream 'g
-                                                      (cons-stream 'g
-                                                                   (cons-stream 'g
-                                                                                istream)))))))
-(print-stream (rand-stream istream) 13)
+; (define istream
+;   (cons-stream 1024
+;                (cons-stream 'g
+;                             (cons-stream 'g
+;                                          (cons-stream 'g
+;                                                       (cons-stream 'g
+;                                                                    (cons-stream 'g
+;                                                                                 istream)))))))
+; (print-stream (rand-stream istream) 13)
 
