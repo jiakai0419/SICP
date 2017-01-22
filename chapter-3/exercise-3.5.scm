@@ -1,5 +1,10 @@
 #lang scheme
 
+(#%provide
+ random-in-range
+ sqr
+ exact->inexact)
+
 (define (random-in-range low high)
   (let ((range (- high low)))
     (+ low (* (random) range))))
