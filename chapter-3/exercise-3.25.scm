@@ -2,6 +2,8 @@
 
 (#%require "r5rs-boost.scm")
 
+(#%provide make-table)
+
 (define (make-table)
   (let ((local-table (list '*table*)))
 
