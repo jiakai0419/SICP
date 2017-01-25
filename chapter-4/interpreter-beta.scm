@@ -2,7 +2,7 @@
 
 (#%require "dispatch-table.scm")
 
-;; env
+;; variable
 (define (lookup-variable-value exp env)
   'SKIP)
 
