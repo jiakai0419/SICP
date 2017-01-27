@@ -22,12 +22,14 @@
 
   (put! 'eval type (lambda (exp env) exp))
   'done)
+(install-self_evaluating-package)
 
 (define (install-variable-package)
   (define type 'variable)
 
   (put! 'eval type lookup-variable-value)
   'done)
+(install-variable-package)
 
 (define (install-quoted-package)
   (define type 'quote)
@@ -36,6 +38,7 @@
 
   (put! 'eval type (lambda (exp env) (text-of-quotation exp)))
   'done)
+(install-quoted-package)
 
 (define (install-assignment-package)
   (define type 'set!)
@@ -49,6 +52,7 @@
 
   (put! 'eval type eval-assignment)
   'done)
+(install-assignment-package)
 
 (define (install-definition-package)
   (define type 'define)
@@ -68,6 +72,7 @@
                       env))
   (put! 'eval type eval-definition)
   'done)
+(install-definition-package)
 
 (define (install-if-package)
   (define type 'if)
@@ -78,7 +83,8 @@
     (if (not (null? (cdddr exp)))
       (cadddr exp)
       #f))
-  (define (true? predicate) 'SKIP)
+  (define (true? predicate)
+    (not (eq? predicate '#f)))
   (define (eval-if exp env)
     (if (true? (eval (if-predicate exp) env))
       (eval (if-consequent exp) env)
@@ -88,6 +94,7 @@
   (put! 'make type (lambda (predicate consequent alternative)
                      (list type predicate consequent alternative)))
   'done)
+(install-if-package)
 (define make-if (get 'make 'if))
 
 (define (install-lambda-package)
@@ -104,6 +111,7 @@
                      (cons type
                            (cons parameters body))))
   'done)
+(install-lambda-package)
 (define make-lambda (get 'make 'lambda))
 
 (define (install-begin-package)
@@ -128,6 +136,7 @@
                        (eval-sequence (begin-actions exp) env)))
   (put! 'sequence->exp type sequence->exp)
   'done)
+(install-begin-package)
 (define sequence->exp (get 'sequence->exp 'begin))
 
 (define (install-cond-package)
@@ -157,6 +166,7 @@
   (put! 'eval type (lambda (exp env)
                      (eval (cond->if exp) env)))
   'done)
+(install-cond-package)
 
 (define (install-application-package)
   (define type 'call)
@@ -176,12 +186,15 @@
                      (apply (eval (operator exp) env)
                             (list-of-values (operands exp) env))))
   'done)
+(install-application-package)
 (define eval-application (get 'eval 'call))
 
 ;; eval
 (define (self-evaluating? exp)
   (cond ((number? exp) true)
         ((string? exp) true)
+        ((eq? exp '#t) true)
+        ((eq? exp '#f) true)
         (else #f)))
 
 (define (variable? exp)
