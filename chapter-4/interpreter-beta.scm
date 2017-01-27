@@ -2,6 +2,9 @@
 
 (#%require "dispatch-table.scm")
 
+(#%provide
+ eval)
+
 ;; variable
 (define (lookup-variable-value exp env)
   'SKIP)
@@ -188,6 +191,46 @@
   'done)
 (install-application-package)
 (define eval-application (get 'eval 'call))
+
+(define (install-and-package)
+  (define type 'and)
+
+  (define (and-clauses exp) (cdr exp))
+  (define (and->if exp)
+    (expand-clauses (and-clauses exp)))
+  (define (expand-clauses clauses)
+    (if (null? clauses)
+      #t
+      (let ((first (car clauses))
+            (rest (cdr clauses)))
+        (make-if first
+                 (expand-clauses rest)
+                 #f))))
+
+  (put! 'eval type (lambda (exp env)
+                     (eval (and->if exp) env)))
+  'done)
+(install-and-package)
+
+(define (install-or-package)
+  (define type 'or)
+
+  (define (or-clauses exp) (cdr exp))
+  (define (or->if exp)
+    (expand-clauses (or-clauses exp)))
+  (define (expand-clauses clauses)
+    (if (null? clauses)
+      #f
+      (let ((first (car clauses))
+            (rest (cdr clauses)))
+        (make-if first
+                 #t
+                 (expand-clauses rest)))))
+
+  (put! 'eval type (lambda (exp env)
+                     (eval (or->if exp) env)))
+  'done)
+(install-or-package)
 
 ;; eval
 (define (self-evaluating? exp)
