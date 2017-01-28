@@ -243,6 +243,24 @@
   'done)
 (install-or-package)
 
+(define (install-let-package)
+  (define type 'let)
+
+  (define (let-pairs exp) (cadr exp))
+  (define (let-body exp) (cddr exp))
+  (define (let->combination exp)
+    (let ((pairs (let-pairs exp))
+          (body (let-body exp)))
+      (let ((parameters (map car pairs)))
+        (let ((lmbd (make-lambda parameters body)))
+          (cons lmbd
+                (map cadr pairs))))))
+
+  (put! 'eval type (lambda (exp env)
+                     (eval (let->combination exp) env)))
+  'done)
+(install-let-package)
+
 ;; eval
 (define (self-evaluating? exp)
   (cond ((number? exp) true)
