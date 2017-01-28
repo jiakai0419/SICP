@@ -152,6 +152,17 @@
   (define (cond-actions clause) (cdr clause))
   (define (cond->if exp)
     (expand-clauses (cond-clauses exp)))
+  (define (clause->exp clause)
+    (let ((snd (cadr clause)))
+      (if (eq? snd '=>)
+        (recipient-clause->exp clause)
+        (sequence->exp (cond-actions clause)))))
+  (define (recipient-clause->exp clause)
+    (let ((test (cond-predicate clause))
+          (recipient (caddr clause)))
+      (list recipient
+            test)))
+
   (define (expand-clauses clauses)
     (if (null? clauses)
       #f
@@ -159,11 +170,11 @@
             (rest (cdr clauses)))
         (if (cond-else-clause? first)
           (if (null? rest)
-            (sequence->exp (cond-actions first))
+            (clause->exp first)
             (error "ELSE clause isn't last -- COND->IF"
                    clauses))
           (make-if (cond-predicate first)
-                   (sequence->exp (cond-actions first))
+                   (clause->exp first)
                    (expand-clauses rest))))))
 
   (put! 'eval type (lambda (exp env)
