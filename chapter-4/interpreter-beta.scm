@@ -248,18 +248,39 @@
 
   (define (let-pairs exp) (cadr exp))
   (define (let-body exp) (cddr exp))
+  (define (translate-let pairs body)
+    (let ((parameters (map car pairs)))
+      (let ((lmbd (make-lambda parameters body)))
+        (cons lmbd
+              (map cadr pairs)))))
   (define (let->combination exp)
     (let ((pairs (let-pairs exp))
           (body (let-body exp)))
-      (let ((parameters (map car pairs)))
-        (let ((lmbd (make-lambda parameters body)))
-          (cons lmbd
-                (map cadr pairs))))))
+      (translate-let pairs body)))
 
   (put! 'eval type (lambda (exp env)
                      (eval (let->combination exp) env)))
+  (put! 'translate type translate-let)
   'done)
 (install-let-package)
+(define translate-let (get 'translate 'let))
+
+(define (install-let*-package)
+  (define type 'let*)
+
+  (define (let*-pairs exp) (cadr exp))
+  (define (let*-body exp) (cddr exp))
+  (define (let*->nested-lets exp)
+    (expand-pairs (let*-pairs exp) (let*-body exp)))
+  (define (expand-pairs pairs body)
+    (if (null? (cdr pairs))
+      (translate-let pairs body)
+      (translate-let (list (car pairs)) (expand-pairs (cdr pairs) body))))
+
+  (put! 'eval type (lambda (exp env)
+                     (eval (let*->nested-lets exp) env)))
+  'done)
+(install-let*-package)
 
 ;; eval
 (define (self-evaluating? exp)
