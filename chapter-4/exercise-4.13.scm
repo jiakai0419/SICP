@@ -9,6 +9,9 @@
 (eval '(define universe 42) e1)
 ;; expected 42
 (eval 'universe e1)
+(eval '(define Kai 27) e1)
+;; expected 27
+(eval 'Kai e1)
 
 (eval '(make-unbound! universe) e1)
 ;; expected 2
