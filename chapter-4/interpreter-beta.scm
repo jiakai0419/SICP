@@ -1,19 +1,12 @@
 #lang planet neil/sicp
 
 (#%require "dispatch-table.scm")
+(#%require "environment.scm")
 
 (#%provide
- eval)
-
-;; variable
-(define (lookup-variable-value exp env)
-  'SKIP)
-
-(define (set-variable-value! variable value env)
-  'SKIP)
-
-(define (define-variable! variable value env)
-  'SKIP)
+ eval
+ the-empty-environment
+ extend-environment)
 
 ;; procedure
 (define (make-procedure parameters body env)
@@ -76,6 +69,19 @@
   (put! 'eval type eval-definition)
   'done)
 (install-definition-package)
+
+(define (install-undefinition-package)
+  (define type 'make-unbound!)
+
+  (define (undefinition-variable exp)
+    (cadr exp))
+  (define (eval-undefinition exp env)
+    (undefine-variable! (undefinition-variable exp)
+                        env))
+
+  (put! 'eval type eval-undefinition)
+  'done)
+(install-undefinition-package)
 
 (define (install-if-package)
   (define type 'if)
