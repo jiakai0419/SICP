@@ -2,15 +2,29 @@
 
 (#%require "dispatch-table.scm")
 (#%require "environment.scm")
+(#%require "primitive-procedure.scm")
 
 (#%provide
  eval
  the-empty-environment
- extend-environment)
+ extend-environment
+ the-global-environment)
+
+;; global-environment
+(define (setup-environment)
+  (let ((initial-env (extend-environment (primitive-procedure-names)
+                                         (primitive-procedure-objects)
+                                         the-empty-environment)))
+    initial-env))
+
+(define the-global-environment (setup-environment))
 
 ;; procedure
 (define (make-procedure parameters body env)
-  'SKIP)
+  'TODO)
+
+(define (compound-procedure? procedure)
+  #f) ;; TODO
 
 ;; install packages
 (define (install-self_evaluating-package)
@@ -327,5 +341,10 @@
 
 ;; apply
 (define (apply procedure arguments)
-  'SKIP)
+  (cond ((primitive-procedure? procedure)
+         (apply-primitive-procedure procedure arguments))
+        ((compound-procedure? procedure)
+         'TODO)
+        (else
+          (error "Unkown procedure type -- APPLY" procedure))))
 
