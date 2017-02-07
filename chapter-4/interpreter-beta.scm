@@ -2,13 +2,16 @@
 
 (#%require "dispatch-table.scm")
 (#%require "environment.scm")
-(#%require "primitive-procedure.scm")
+(#%require "procedure.scm")
 
 (#%provide
  eval
  the-empty-environment
  extend-environment
- the-global-environment)
+ the-global-environment
+ compound-procedure?
+ procedure-parameters
+ procedure-body)
 
 ;; global-environment
 (define (setup-environment)
@@ -18,13 +21,6 @@
     initial-env))
 
 (define the-global-environment (setup-environment))
-
-;; procedure
-(define (make-procedure parameters body env)
-  'TODO)
-
-(define (compound-procedure? procedure)
-  #f) ;; TODO
 
 ;; install packages
 (define (install-self_evaluating-package)
@@ -141,7 +137,7 @@
   (define type 'begin)
 
   (define (begin-actions exp) (cdr exp))
-  (define (last-exp? seq) (null? (cdr exp)))
+  (define (last-exp? seq) (null? (cdr seq)))
   (define (first-exp seq) (car seq))
   (define (rest-exps seq) (cdr seq))
   (define (eval-sequence exps env)
@@ -158,9 +154,11 @@
   (put! 'eval type (lambda (exp env)
                        (eval-sequence (begin-actions exp) env)))
   (put! 'sequence->exp type sequence->exp)
+  (put! 'eval-sequence type eval-sequence)
   'done)
 (install-begin-package)
 (define sequence->exp (get 'sequence->exp 'begin))
+(define eval-sequence (get 'eval-sequence 'begin))
 
 (define (install-cond-package)
   (define type 'cond)
@@ -344,7 +342,12 @@
   (cond ((primitive-procedure? procedure)
          (apply-primitive-procedure procedure arguments))
         ((compound-procedure? procedure)
-         'TODO)
+         (eval-sequence
+           (procedure-body procedure)
+           (extend-environment
+             (procedure-parameters procedure)
+             arguments
+             (procedure-environment procedure))))
         (else
           (error "Unkown procedure type -- APPLY" procedure))))
 
