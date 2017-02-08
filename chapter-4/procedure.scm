@@ -1,5 +1,8 @@
 #lang planet neil/sicp
 
+(#%require "extension-inner-definition.scm")
+(#%require "utils.scm")
+
 (#%provide
  primitive-procedure?
  primitive-procedure-names
@@ -10,11 +13,6 @@
  procedure-parameters
  procedure-body
  procedure-environment)
-
-(define (tagged-list? exp tag)
-  (if (pair? exp)
-    (eq? (car exp) tag)
-    #f))
 
 ;; primitive procedure
 (define (primitive-procedure? proc)
@@ -31,7 +29,9 @@
         (list '+ +)
         (list '- -)
         (list '* *)
-        (list '/ /)))
+        (list '/ /)
+        (list 'display display)
+        (list 'newline newline)))
 
 (define (primitive-procedure-names)
   (map car primitive-procedures))
@@ -47,7 +47,10 @@
 
 ;; compound-procedure
 (define (make-procedure parameters body env)
-  (list 'procedure parameters body env))
+  (list 'procedure
+        parameters
+        (scan-out-defines body)
+        env))
 
 (define (compound-procedure? p)
   (tagged-list? p 'procedure))

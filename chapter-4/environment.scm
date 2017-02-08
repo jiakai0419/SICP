@@ -1,5 +1,7 @@
 #lang planet neil/sicp
 
+(#%require "constants.scm")
+
 (#%provide
  lookup-variable-value
  extend-environment
@@ -17,12 +19,19 @@
 
 ;; export
 (define (lookup-variable-value var env)
+  (define (unassigned? val)
+    (if (eq? val UNASSIGNED)
+      #t
+      #f))
   (if (eq? env the-empty-environment)
     (error "Unbound variable" var)
     (let ((frame (first-frame env)))
       (let ((vals (scan (frame-variables frame) (frame-values frame) var)))
         (if vals
-          (car vals)
+          (let ((val (car vals)))
+            (if (unassigned? val)
+              (error "Unassigned variable" var)
+              val))
           (lookup-variable-value var (enclosing-environment env)))))))
 
 (define (extend-environment vars vals base-env)
