@@ -1,6 +1,7 @@
 #lang planet neil/sicp
 
-(#%require "extension-inner-definition.scm")
+; (#%require "extension-inner-definition.scm")
+(#%require "exercise-4.17.scm")
 (#%require "utils.scm")
 
 (#%provide
