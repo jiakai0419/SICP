@@ -3,6 +3,7 @@
 (#%require "dispatch-table.scm")
 (#%require "environment.scm")
 (#%require "procedure.scm")
+(#%require "exercise-4.20.scm")
 
 (#%provide
  eval
@@ -312,6 +313,14 @@
                      (eval (let*->nested-lets exp) env)))
   'done)
 (install-let*-package)
+
+(define (install-letrec-package)
+  (define type 'letrec)
+
+  (put! 'eval type (lambda (exp env)
+                     (eval (letrec->let exp) env)))
+  'done)
+(install-letrec-package)
 
 ;; eval
 (define (self-evaluating? exp)

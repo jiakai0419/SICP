@@ -32,7 +32,8 @@
         (list '* *)
         (list '/ /)
         (list 'display display)
-        (list 'newline newline)))
+        (list 'newline newline)
+        (list '= =)))
 
 (define (primitive-procedure-names)
   (map car primitive-procedures))
