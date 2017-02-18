@@ -2,7 +2,7 @@
 
 (#%require "dispatch-table.scm")
 (#%require "environment.scm")
-(#%require "procedure.scm")
+(#%require "procedure-gamma.scm")
 
 (#%provide
  eval
@@ -167,36 +167,24 @@
 (install-application-package)
 (define analyze-application (get 'analyze 'call))
 
-; (define (install-let-package)
-;   (define type 'let)
+(define (install-let-package)
+  (define type 'let)
 
-;   (define (let-naming? exp)
-;     (symbol? (cadr exp)))
-;   (define (let-bindings exp)
-;     (cadr exp))
-;   (define (let-body exp)
-;     (cddr exp))
-;   (define (letn-var exp)
-;     (cadr exp))
-;   (define (letn-bindings exp)
-;     (caddr exp))
-;   (define (letn-body exp)
-;     (cdddr exp))
-;   (define (let->combination exp)
-;     (let ((bindings (if (let-naming? exp) (letn-bindings exp) (let-bindings exp)))
-;           (body (if (let-naming? exp) (letn-body exp) (let-body exp))))
-;       (let ((lbd (make-lambda (map car bindings) body)))
-;         (if (let-naming? exp)
-;           (let->combination (list type
-;                                   (list (list (letn-var exp) lbd))
-;                                   (cons type (cddr exp))))
-;           (cons lbd
-;                 (map cadr bindings))))))
+  (define (let-bindings exp)
+    (cadr exp))
+  (define (let-body exp)
+    (cddr exp))
+  (define (let->combination exp)
+    (let ((bindings (let-bindings exp))
+          (body (let-body exp)))
+      (let ((lbd (make-lambda (map car bindings) body)))
+        (cons lbd
+              (map cadr bindings)))))
 
-;   (put! 'eval type (lambda (exp env)
-;                      (eval (let->combination exp) env)))
-;   'done)
-; (install-let-package)
+  (put! 'analyze type (lambda (exp)
+                        (analyze (let->combination exp))))
+  'done)
+(install-let-package)
 
 ;; eval
 (define (self-evaluating? exp)

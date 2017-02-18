@@ -1,6 +1,6 @@
 #lang planet neil/sicp
 
-(#%require "interpreter-beta.scm")
+(#%require "interpreter-gamma.scm")
 
 (define input-prompt ";;; M-Eval input:")
 (define output-prompt ";;; M-Eval value:")
