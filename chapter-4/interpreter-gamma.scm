@@ -101,12 +101,16 @@
       #f))
   (define (true? predicate)
     (not (eq? predicate '#f)))
-  (define (eval-if exp env)
-    (if (true? (eval (if-predicate exp) env))
-      (eval (if-consequent exp) env)
-      (eval (if-alternative exp) env)))
+  (define (analyze-if exp)
+    (let ((pproc (analyze (if-predicate exp)))
+          (cproc (analyze (if-consequent exp)))
+          (aproc (analyze (if-alternative exp))))
+      (lambda (env)
+        (if (true? (pproc env))
+          (cproc env)
+          (aproc env)))))
 
-  (put! 'eval type eval-if)
+  (put! 'analyze type analyze-if)
   (put! 'make type (lambda (predicate consequent alternative)
                      (list type predicate consequent alternative)))
   'done)
@@ -119,10 +123,11 @@
   (define (lambda-parameters exp) (cadr exp))
   (define (lambda-body exp) (cddr exp))
 
-  (put! 'eval type (lambda (exp env)
-                     (make-procedure (lambda-parameters exp)
-                                     (lambda-body exp)
-                                     env)))
+  (put! 'analyze type (lambda (exp)
+                        (let ((vars (lambda-parameters exp))
+                              (bproc (analyze-sequence (lambda-body exp))))
+                          (lambda (env)
+                            (make-procedure vars bproc env)))))
   (put! 'make type (lambda (parameters body)
                      (cons type
                            (cons parameters body))))
@@ -130,26 +135,37 @@
 (install-lambda-package)
 (define make-lambda (get 'make 'lambda))
 
+(define (analyze-sequence exps)
+  (define (sequentially proc1 proc2)
+    (lambda (env)
+      (proc1 env)
+      (proc2 env)))
+  (define (loop first-proc rest-procs)
+    (if (null? rest-procs)
+      first-proc
+      (loop (sequentially first-proc (car rest-procs))
+            (cdr rest-procs))))
+  (let ((procs (map analyze exps)))
+    (if (null? procs)
+      (error "Empty sequence -- ANALYZE")
+      (loop (car procs) (cdr procs)))))
+
 (define (install-application-package)
   (define type 'call)
 
   (define (operator exp) (car exp))
   (define (operands exp) (cdr exp))
-  (define (no-operands ops) (null? ops))
-  (define (first-operand ops) (car ops))
-  (define (rest-operands ops) (cdr ops))
-  (define (list-of-values exps env)
-    (if (no-operands exps)
-      '()
-      (cons (eval (first-operand exps) env)
-            (list-of-values (rest-operands exps) env))))
 
-  (put! 'eval type (lambda (exp env)
-                     (apply (eval (operator exp) env)
-                            (list-of-values (operands exp) env))))
+  (put! 'analyze type (lambda (exp)
+                        (let ((fproc (analyze (operator exp)))
+                              (aprocs (map analyze (operands exp))))
+                          (lambda (env)
+                            (execute-application (fproc env)
+                                                 (map (lambda (aproc) (aproc env))
+                                                      aprocs))))))
   'done)
 (install-application-package)
-(define eval-application (get 'eval 'call))
+(define analyze-application (get 'analyze 'call))
 
 ; (define (install-let-package)
 ;   (define type 'let)
@@ -209,16 +225,15 @@
   ((analyze exp) env))
 
 ;; apply
-(define (apply procedure arguments)
+(define (execute-application procedure arguments)
   (cond ((primitive-procedure? procedure)
          (apply-primitive-procedure procedure arguments))
         ((compound-procedure? procedure)
-         (eval-sequence
-           (procedure-body procedure)
-           (extend-environment
-             (procedure-parameters procedure)
-             arguments
-             (procedure-environment procedure))))
+         ((procedure-body procedure)
+          (extend-environment
+            (procedure-parameters procedure)
+            arguments
+            (procedure-environment procedure))))
         (else
           (error "Unkown procedure type -- APPLY" procedure))))
 
