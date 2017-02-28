@@ -89,7 +89,6 @@
   'done)
 (install-definition-package)
 
-;; TODO
 (define (install-if-package)
   (define type 'if)
 
@@ -116,6 +115,25 @@
   'done)
 (install-if-package)
 (define make-if (get 'make 'if))
+
+; (define (install-unless-package)
+;   (define type 'unless)
+
+;   (define (unless-condition exp)
+;     (cadr exp))
+;   (define (unless-usual-value exp)
+;     (caddr exp))
+;   (define (unless-exceptional-value exp)
+;     (cadddr exp))
+;   (define (unless->combination exp)
+;     (make-if (unless-condition exp)
+;              (unless-exceptional-value exp)
+;              (unless-usual-value exp)))
+
+;   (put! 'analyze type (lambda (exp)
+;                         (analyze (unless->combination exp))))
+;   'done)
+; (install-unless-package)
 
 (define (install-lambda-package)
   (define type 'lambda)
