@@ -1,14 +1,14 @@
 #lang planet neil/sicp
 
-(#%require "interpreter-gamma.scm")
+(#%require "interpreter-delta.scm")
 
-(define input-prompt ";;; M-Eval input:")
-(define output-prompt ";;; M-Eval value:")
+(define input-prompt ";;; L-Eval input:")
+(define output-prompt ";;; L-Eval value:")
 
 (define (driver-loop)
   (prompt-from-input input-prompt)
   (let ((input (read)))
-    (let ((output (eval input the-global-environment)))
+    (let ((output (actual-value input the-global-environment)))
       (announce-output output-prompt)
       (user-print output)))
   (driver-loop))

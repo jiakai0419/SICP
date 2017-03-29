@@ -106,7 +106,7 @@
   (define (true? predicate)
     (not (eq? predicate '#f)))
   (define (eval-if exp env)
-    (if (true? (eval (if-predicate exp) env))
+    (if (true? (actual-value (if-predicate exp) env))
       (eval (if-consequent exp) env)
       (eval (if-alternative exp) env)))
 
@@ -206,14 +206,6 @@
 
   (define (operator exp) (car exp))
   (define (operands exp) (cdr exp))
-  ; (define (no-operands ops) (null? ops))
-  ; (define (first-operand ops) (car ops))
-  ; (define (rest-operands ops) (cdr ops))
-  ; (define (list-of-values exps env)
-  ;   (if (no-operands exps)
-  ;     '()
-  ;     (cons (eval (first-operand exps) env)
-  ;           (list-of-values (rest-operands exps) env))))
 
   (put! 'eval type (lambda (exp env)
                      (apply (actual-value (operator exp) env)
@@ -348,20 +340,37 @@
    env))
 
 ;; apply
-(define (apply procedure arguments)
+(define (actual-value exp env)
+  (force-it (eval exp env)))
+
+(define (no-operands ops) (null? ops))
+(define (first-operand ops) (car ops))
+(define (rest-operands ops) (cdr ops))
+
+(define (list-of-arg-values exps env)
+  (if (no-operands exps)
+    '()
+    (cons (actual-value (first-operand exps) env)
+          (list-of-arg-values (rest-operands exps) env))))
+
+(define (list-of-delayed-args exps env)
+  (if (no-operands exps)
+    '()
+    (cons (delay-it (first-operand exps) env)
+          (list-of-delayed-args (rest-operands exps) env))))
+
+(define (apply procedure arguments env)
   (cond ((primitive-procedure? procedure)
-         (apply-primitive-procedure procedure arguments))
+         (apply-primitive-procedure
+           procedure
+           (list-of-arg-values arguments env)))
         ((compound-procedure? procedure)
          (eval-sequence
            (procedure-body procedure)
            (extend-environment
              (procedure-parameters procedure)
-             arguments
+             (list-of-delayed-args arguments env)
              (procedure-environment procedure))))
         (else
           (error "Unkown procedure type -- APPLY" procedure))))
-
-;; thunk
-(define (actual-value exp env)
-  (force-it (eval exp env)))
 
