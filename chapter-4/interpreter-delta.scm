@@ -4,6 +4,7 @@
 (#%require "environment.scm")
 (#%require "procedure.scm")
 (#%require "exercise-4.20.scm")
+(#%require "utils.scm")
 
 (#%provide
  eval
@@ -12,7 +13,8 @@
  the-global-environment
  compound-procedure?
  procedure-parameters
- procedure-body)
+ procedure-body
+ actual-value)
 
 ;; global-environment
 (define (setup-environment)
@@ -340,9 +342,6 @@
    env))
 
 ;; apply
-(define (actual-value exp env)
-  (force-it (eval exp env)))
-
 (define (no-operands ops) (null? ops))
 (define (first-operand ops) (car ops))
 (define (rest-operands ops) (cdr ops))
@@ -373,4 +372,38 @@
              (procedure-environment procedure))))
         (else
           (error "Unkown procedure type -- APPLY" procedure))))
+
+;; thunk
+(define (actual-value exp env)
+  (force-it (eval exp env)))
+
+(define (delay-it exp env)
+  (list 'thunk exp env))
+
+(define (thunk? obj)
+  (tagged-list? obj 'thunk))
+
+(define (thunk-exp thunk)
+  (cadr thunk))
+
+(define (thunk-env thunk)
+  (caddr thunk))
+
+(define (evaluated-thunk? obj)
+  (tagged-list? obj 'evaluated-thunk))
+
+(define (thunk-value evaluated-thunk)
+  (cadr evaluated-thunk))
+
+(define (force-it obj)
+  (cond ((thunk? obj)
+         (let ((result (actual-value
+                         (thunk-exp obj)
+                         (thunk-env obj))))
+           (set-car! obj 'evaluated-thunk)
+           (set-car! (cdr obj) result)
+           (set-cdr! (cdr obj) '())
+           result))
+        ((evaluated-thunk? obj) (thunk-value obj))
+        (else obj)))
 
