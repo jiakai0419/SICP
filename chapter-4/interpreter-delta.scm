@@ -2,7 +2,7 @@
 
 (#%require "dispatch-table.scm")
 (#%require "environment.scm")
-(#%require "procedure.scm")
+(#%require "procedure-delta.scm")
 (#%require "exercise-4.20.scm")
 (#%require "utils.scm")
 

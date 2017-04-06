@@ -1,6 +1,7 @@
 #lang planet neil/sicp
 
 (#%require "interpreter-delta.scm")
+(#%require "lazy-cons.scm")
 
 (define input-prompt ";;; L-Eval input:")
 (define output-prompt ";;; L-Eval value:")
