@@ -44,8 +44,18 @@
   (define type 'quote)
 
   (define (text-of-quotation exp) (cadr exp))
+  (define (quote->combination exp)
+    (if (null? exp)
+      '()
+      (list 'cons
+            (list 'quote (car exp))
+            (quote->combination (cdr exp)))))
 
-  (put! 'eval type (lambda (exp env) (text-of-quotation exp)))
+  (put! 'eval type (lambda (exp env)
+                     (let ((text (text-of-quotation exp)))
+                       (if (pair? text)
+                         (eval (quote->combination text) env)
+                         text))))
   'done)
 (install-quoted-package)
 
@@ -323,6 +333,7 @@
         ((string? exp) true)
         ((eq? exp '#t) true)
         ((eq? exp '#f) true)
+        ((eq? exp '()) true)
         (else #f)))
 
 (define (variable? exp)
